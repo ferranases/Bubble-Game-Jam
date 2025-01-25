@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
     public void Activate()
     {
         active = true;
+        transform.localEulerAngles = Vector3.zero;
     }
 
     void Start()
@@ -43,7 +44,7 @@ public class CameraController : MonoBehaviour
         currentX += mouseX;
 
         // Calculate rotation and position
-        Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
+        Quaternion rotation = Quaternion.Euler(currentY, currentX - 90, 0);
         Vector3 direction = new Vector3(0, 0, -distance);
         Vector3 newPos = target.position + rotation * direction;
         newPos.y = transform.position.y;
