@@ -47,7 +47,10 @@ public class PlayerController : MonoBehaviour
     [Header("Other")]
     public Transform pointCheckFloorBelow;
     public Transform pointCheckFloorBehind;
+    public Transform parentSkin;
 
+    [Header("Effects")]
+    public ParticleSystem psDie;
 
     [Header("Test")]
     public MeshRenderer meshRenderer;
@@ -57,6 +60,8 @@ public class PlayerController : MonoBehaviour
 
     //PRIVATE
 
+    bool active = false;
+    bool alive = false;
     TypeMode currentMode = TypeMode.iddle;
 
     CameraController cameraController;
@@ -78,6 +83,12 @@ public class PlayerController : MonoBehaviour
 
     bool canCheckFloor = true;
 
+    public void Activate()
+    {
+        active = true;
+        alive = true;
+    }
+
     void Start()
     {
         cameraController = CameraController.instance;
@@ -89,6 +100,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!active) return;
+        if (!alive) return;
+
         bool checkGroundBelow = Physics.CheckSphere(
             pointCheckFloorBelow.position + Vector3.down * (sphereDistance / 2),  // Start position
             sphereRadius,
@@ -206,6 +220,20 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity += Vector3.down * currentCustomGravity * Time.fixedDeltaTime;
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!alive) return;
+        if (!collision.transform.CompareTag("Enemy")) return;
+
+        Die();
+    }
+
+    IEnumerator rutineDie()
+    {
+        yield return new WaitForSeconds(1f);
+        GameManager.instance.RestarScene();
+    }
+
     void ActivateBubble()
     {
         bubbleActivated = true;
@@ -268,5 +296,22 @@ public class PlayerController : MonoBehaviour
     {
         if (coroutineBubble != null) StopCoroutine(coroutineBubble);
         coroutineBubble = StartCoroutine(rutineBubble(1));
+    }
+
+    void Die()
+    {
+
+        psDie.Play();
+        alive = false;
+        StartCoroutine(rutineDie());
+        LeanTween.scale(parentSkin.gameObject, Vector3.zero, 0.1f).setEaseInBack();
+
+        rb.linearVelocity = Vector3.zero;
+        rb.useGravity = false;
+        rb.isKinematic = true;
+
+        GetComponent<CapsuleCollider>().enabled = false;
+
+        GameManager.instance.Die();
     }
 }

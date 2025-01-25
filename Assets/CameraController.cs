@@ -12,11 +12,18 @@ public class CameraController : MonoBehaviour
     public Transform target; // The player or object the camera orbits around    
     public float rotationSpeed = 100.0f; // Speed of horizontal rotation
 
-    private float currentX = 0.0f; // Horizontal rotation angle
-    private float currentY = 0.0f; // Vertical rotation angle
+    bool active = false;
+
+    float currentX = 0.0f; // Horizontal rotation angle
+    float currentY = 0.0f; // Vertical rotation angle
 
     float distance = 0;
     float startY;
+
+    public void Activate()
+    {
+        active = true;
+    }
 
     void Start()
     {
@@ -26,6 +33,7 @@ public class CameraController : MonoBehaviour
 
     void LateUpdate()
     {
+        if (!active) return;
         if (target == null) return;
 
         // Get mouse input
@@ -49,6 +57,11 @@ public class CameraController : MonoBehaviour
         // Make the camera look at the target
 
         //transform.LookAt(target);
+    }
+
+    public void Stop()
+    {
+        active = false;
     }
 
 }
