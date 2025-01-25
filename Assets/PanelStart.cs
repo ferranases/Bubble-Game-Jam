@@ -1,10 +1,15 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PanelStart : MonoBehaviour
 {
     public GameObject buttonPlay;
     public GameObject buttonSettings;
     public GameObject settingsText;
+
+    public TMP_InputField inputFieldName;
+
 
 
     private void Start()
@@ -35,5 +40,7 @@ public class PanelStart : MonoBehaviour
     {
         GameManager.instance.StartGame();
         gameObject.SetActive(false);
+
+
     }
 }

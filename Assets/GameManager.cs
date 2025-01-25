@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,6 +10,12 @@ public class GameManager : MonoBehaviour
         if (instance == null) instance = this;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+
+    public double timeStart;
+    public double timeEnd;
+
+
     void Start()
     {
         Application.targetFrameRate = 60;
@@ -28,6 +35,8 @@ public class GameManager : MonoBehaviour
     {
         PlayerController.instance.Activate();
         CameraController.instance.Activate();
+
+        timeStart = Time.time;
     }
 
     public void Win()
@@ -35,6 +44,9 @@ public class GameManager : MonoBehaviour
         PlayerController.instance.Stop();
         CameraController.instance.Stop();
 
+        timeEnd = Time.time;
+
+        Debug.Log("Your Time: " + TimeDifferenceInMinutesAndSeconds(timeStart, timeEnd));
         CanvasController.instance.ShowPanelWin();
     }
 
@@ -48,6 +60,25 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    static string TimeDifferenceInMinutesAndSeconds(double timeStart, double timeEnd)
+    {
+        // Calculate the absolute difference in seconds
+        double differenceInSeconds = Math.Abs(timeEnd - timeStart);
+
+        // Get whole minutes
+        int minutes = (int)(differenceInSeconds / 60);
+
+        // Get remaining seconds (up to 60)
+        int seconds = (int)(differenceInSeconds % 60);
+
+        // Return formatted time in "minutes:seconds"
+        return $"{minutes}:{seconds:D2}";  // :D2 ensures seconds are always two digits
+    }
+
+    public string GetYourTime()
+    {
+        return TimeDifferenceInMinutesAndSeconds(timeStart, timeEnd);
+    }
 
 
 }

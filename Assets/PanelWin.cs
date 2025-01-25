@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,6 +6,7 @@ public class PanelWin : MonoBehaviour
 {
 
     public Image background;
+    public TextMeshProUGUI yourTime;
 
     public void Activate()
     {
@@ -20,6 +22,9 @@ public class PanelWin : MonoBehaviour
             startColor.a = _val;
             background.color = startColor;
         });
+
+        string time = GameManager.instance.GetYourTime();
+        yourTime.text = time;
     }
 
     public void ButtonRetry()
