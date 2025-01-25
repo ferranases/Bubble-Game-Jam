@@ -4,6 +4,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.InputSystem.XR;
 
+public enum TypeMode
+{
+    iddle,
+    jumping,
+    bubble
+}
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController instance = null;
@@ -49,6 +55,10 @@ public class PlayerController : MonoBehaviour
     public Material materialJump;
     public Material materialBubble;
 
+    //PRIVATE
+
+    TypeMode currentMode = TypeMode.iddle;
+
     CameraController cameraController;
     Rigidbody rb;
     Coroutine coroutineBubble = null;
@@ -66,7 +76,7 @@ public class PlayerController : MonoBehaviour
 
     Vector3 moveDirection;
 
-
+    bool canCheckFloor = true;
 
     void Start()
     {
@@ -82,24 +92,36 @@ public class PlayerController : MonoBehaviour
         bool checkGroundBelow = Physics.CheckSphere(
             pointCheckFloorBelow.position + Vector3.down * (sphereDistance / 2),  // Start position
             sphereRadius,
-            layerMask
+            layerMask,
+            QueryTriggerInteraction.Ignore
         );
-        //bool checkGroundBelow = Physics.Raycast(transform.position, Vector3.down, 1.25f);
-        //bool checkGroundBehind = Physics.Raycast(pointCheckFloorBehind.position, Vector3.down, 1.25f);
 
-        if (checkGroundBelow)
+        if (canCheckFloor)
         {
-            isGrounded = true;
-            meshRenderer.material = materialGround;
-            bubbleActivated = false;
-            youJumped = false;
+            if (checkGroundBelow)
+            {
+                isGrounded = true;
+                meshRenderer.material = materialGround;
+                bubbleActivated = false;
+                youJumped = false;
+                currentMode = TypeMode.iddle;
+                if (coroutineBubble != null) StopCoroutine(coroutineBubble);
+            }
+            else
+            {
+                isGrounded = false;
+                meshRenderer.material = materialJump;
+            }
         }
         else
         {
-            Debug.Log("isGrounded: " + isGrounded);
-            isGrounded = false;
-            meshRenderer.material = materialJump;
+            if (!checkGroundBelow)
+            {
+                canCheckFloor = true;
+            }
         }
+
+
 
         if (bubbleActivated)
         {
@@ -114,6 +136,7 @@ public class PlayerController : MonoBehaviour
 
         float horizontalRot = Input.GetAxis("Horizontal"); // A/D or Left/Right
         float verticalRot = Input.GetAxis("Vertical");     // W/S or Up/Down
+
         // Get the forward and right directions relative to the camera
         Vector3 forward = cameraController.transform.forward;
         Vector3 right = cameraController.transform.right;
@@ -138,6 +161,7 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(lookDirection);
         }
 
+
         if (Input.GetKeyDown(KeyCode.Space) && !bubbleActivated && youJumped)
         {
             ActivateBubble();
@@ -148,6 +172,8 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(Vector3.up * jump, ForceMode.Impulse);
             youJumped = true;
+            canCheckFloor = false;
+            currentMode = TypeMode.jumping;
         }
 
         if (bubbleActivated && Input.GetKeyUp(KeyCode.Space))
@@ -168,11 +194,11 @@ public class PlayerController : MonoBehaviour
             {
                 rb.linearVelocity += Vector3.up * Physics.gravity.y * (currentFallMultiplier - 1) * Time.fixedDeltaTime;
             }
-            // If jump is released early, apply low jump gravity
-            else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump"))
-            {
-                rb.linearVelocity += Vector3.up * Physics.gravity.y * (currentLowJumpMultiplier - 1) * Time.fixedDeltaTime;
-            }
+            /* // If jump is released early, apply low jump gravity
+             else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump"))
+             {
+                 rb.linearVelocity += Vector3.up * Physics.gravity.y * (currentLowJumpMultiplier - 1) * Time.fixedDeltaTime;
+             }*/
         }
 
         rb.MovePosition(rb.position + (moveDirection * speed * Time.fixedDeltaTime));
@@ -182,10 +208,9 @@ public class PlayerController : MonoBehaviour
     void ActivateBubble()
     {
         bubbleActivated = true;
+        currentMode = TypeMode.bubble;
 
         rb.linearVelocity = Vector3.zero;
-
-
         currentLowJumpMultiplier = 0;
 
         if (coroutineBubble != null) StopCoroutine(coroutineBubble);
@@ -219,6 +244,26 @@ public class PlayerController : MonoBehaviour
         Gizmos.color = Color.green;
 
         Gizmos.DrawWireSphere(pointCheckFloorBelow.position + Vector3.down * (sphereDistance / 2), sphereRadius);
+    }
 
+    public TypeMode GetMode()
+    {
+        return currentMode;
+    }
+
+    public void SetBubbleGravity()
+    {
+        if (coroutineBubble != null) StopCoroutine(coroutineBubble);
+
+        currentCustomGravity = bubbleCustomGravity;
+        currentFallMultiplier = bubbleFallMultiplier;
+
+        Debug.Log("SetBubbleGravity");
+    }
+
+    public void ResetBubbleColdown()
+    {
+        if (coroutineBubble != null) StopCoroutine(coroutineBubble);
+        coroutineBubble = StartCoroutine(rutineBubble());
     }
 }
