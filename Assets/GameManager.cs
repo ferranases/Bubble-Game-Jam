@@ -30,6 +30,14 @@ public class GameManager : MonoBehaviour
         CameraController.instance.Activate();
     }
 
+    public void Win()
+    {
+        PlayerController.instance.Stop();
+        CameraController.instance.Stop();
+
+        CanvasController.instance.ShowPanelWin();
+    }
+
     public void Die()
     {
         CameraController.instance.Stop();
@@ -39,5 +47,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+
 
 }

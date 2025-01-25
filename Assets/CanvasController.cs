@@ -9,16 +9,18 @@ public class CanvasController : MonoBehaviour
     }
 
     public GameObject panelStart;
+    public PanelWin panelWin;
 
     void Start()
     {
         panelStart.SetActive(true);
+        panelWin.gameObject.SetActive(false);
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ShowPanelWin()
     {
-
+        panelWin.Activate();
     }
 
 }

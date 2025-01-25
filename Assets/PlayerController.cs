@@ -202,6 +202,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!active) return;
+        if (!alive) return;
+
         if (!isGrounded)
         {
             // If falling, apply stronger gravity
@@ -313,5 +316,10 @@ public class PlayerController : MonoBehaviour
         GetComponent<CapsuleCollider>().enabled = false;
 
         GameManager.instance.Die();
+    }
+
+    public void Stop()
+    {
+        active = false;
     }
 }
