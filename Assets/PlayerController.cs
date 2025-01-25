@@ -218,12 +218,16 @@ public class PlayerController : MonoBehaviour
         coroutineBubble = StartCoroutine(rutineBubble());
     }
 
-    IEnumerator rutineBubble()
+    IEnumerator rutineBubble(int _val = 0)
     {
-        currentCustomGravity = -bubbleCustomUp;
-        currentFallMultiplier = 0;
+        if (_val == 0)
+        {
+            currentCustomGravity = -bubbleCustomUp;
+            currentFallMultiplier = 0;
 
-        yield return new WaitForSeconds(bubbleColdownFirst);
+            yield return new WaitForSeconds(bubbleColdownFirst);
+
+        }
 
         currentCustomGravity = bubbleCustomGravity;
         currentFallMultiplier = bubbleFallMultiplier;
@@ -258,13 +262,11 @@ public class PlayerController : MonoBehaviour
 
         currentCustomGravity = bubbleCustomGravity;
         currentFallMultiplier = bubbleFallMultiplier;
-
-        Debug.Log("SetBubbleGravity");
     }
 
     public void ResetBubbleColdown()
     {
         if (coroutineBubble != null) StopCoroutine(coroutineBubble);
-        coroutineBubble = StartCoroutine(rutineBubble());
+        coroutineBubble = StartCoroutine(rutineBubble(1));
     }
 }

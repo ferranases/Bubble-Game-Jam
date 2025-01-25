@@ -5428,5 +5428,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a06e752f07d3e54f8739b5ecc95bf62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forcePush: 625
+  forcePush: 650
   posDesired: {fileID: 2916590860706021292}
+  maxForce: 5000
