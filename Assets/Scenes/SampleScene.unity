@@ -276,7 +276,7 @@ Transform:
   m_GameObject: {fileID: 782427315}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.38095635, z: -0, w: 0.92459303}
-  m_LocalPosition: {x: -0.76, y: 1.02, z: 15.17}
+  m_LocalPosition: {x: -0.76, y: 1.48, z: 15.17}
   m_LocalScale: {x: 2.4673, y: 2.4673, z: 2.4673}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -387,7 +387,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 776a0e8838578074f8117a8c704ec878, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
+  speed: 7.5
+  jump: 15
+  customGravity: 25
+  fallMultiplier: 2.5
+  lowJumpMultiplier: 2
 --- !u!4 &801682338
 Transform:
   m_ObjectHideFlags: 0
@@ -411,7 +415,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 801682334}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d42a7ac650d641048939824fb7028ec4, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -590,7 +594,6 @@ GameObject:
   - component: {fileID: 1038175845}
   - component: {fileID: 1038175848}
   - component: {fileID: 1038175847}
-  - component: {fileID: 1038175846}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -613,27 +616,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 828859961}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1038175846
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1038175844}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1038175847
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -801,7 +783,7 @@ Transform:
   m_GameObject: {fileID: 1241911454}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.69, y: 1.02, z: 9.02}
+  m_LocalPosition: {x: -3.69, y: 1.48, z: 9.02}
   m_LocalScale: {x: 2.4673, y: 2.4673, z: 2.4673}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1092,7 +1074,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2097886044}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce5c2a0a86f6e6c4c9ab92d6d0ea4498, type: 3}
   m_Name: 

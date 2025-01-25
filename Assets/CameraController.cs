@@ -38,7 +38,7 @@ public class CameraController : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
         Vector3 direction = new Vector3(0, 0, -distance);
         Vector3 newPos = target.position + rotation * direction;
-        newPos.y = startY;
+        newPos.y = transform.position.y;
         transform.position = newPos;
 
 
