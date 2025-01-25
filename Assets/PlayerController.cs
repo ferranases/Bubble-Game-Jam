@@ -106,6 +106,7 @@ public class PlayerController : MonoBehaviour
                 youJumped = false;
                 currentMode = TypeMode.iddle;
                 if (coroutineBubble != null) StopCoroutine(coroutineBubble);
+                ResetGravity();
             }
             else
             {
