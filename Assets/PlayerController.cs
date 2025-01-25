@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
             moveDirection = Vector3.zero;
         }
 
-        if (moveDirection != Vector3.zero)
+        if (lookDirection != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(lookDirection);
         }
