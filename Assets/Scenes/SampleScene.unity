@@ -608,6 +608,9 @@ MonoBehaviour:
   customGravity: 25
   fallMultiplier: 2.5
   lowJumpMultiplier: 7.5
+  meshRenderer: {fileID: 1137933346}
+  materialGround: {fileID: 2100000, guid: 4358f43740c24d142a2a0a112ff3ca23, type: 2}
+  materialJump: {fileID: 2100000, guid: 1c31e38ee05bb6c46a24b73afc5ffefb, type: 2}
 --- !u!4 &801682338
 Transform:
   m_ObjectHideFlags: 0
@@ -1005,7 +1008,7 @@ GameObject:
   - component: {fileID: 1137933347}
   - component: {fileID: 1137933346}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: PlayerCapsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

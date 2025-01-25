@@ -18,6 +18,10 @@ public class PlayerController : MonoBehaviour
     public float fallMultiplier = 2.5f;  // Multiplier for falling speed
     public float lowJumpMultiplier = 2f; // Multiplier for releasing jump early
 
+    public MeshRenderer meshRenderer;
+    public Material materialGround;
+    public Material materialJump;
+
     CameraController cameraController;
     Rigidbody rb;
     bool isGrounded = true;
@@ -33,6 +37,21 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        bool checkGroundBelow = Physics.Raycast(transform.position, Vector3.down, 1.1f);
+        bool checkGroundBehind = Physics.Raycast(transform.position - new Vector3(0, 0, 0.5f), Vector3.down, 1.1f);
+
+        if (checkGroundBelow || checkGroundBehind)
+        {
+            isGrounded = true;
+            meshRenderer.material = materialGround;
+        }
+        else
+        {
+            isGrounded = false;
+            meshRenderer.material = materialJump;
+        }
+
         isGrounded = Physics.Raycast(transform.position - new Vector3(0, 0, 0.5f), Vector3.down, 1.1f);
 
         // Get input for movement
