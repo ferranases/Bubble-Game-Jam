@@ -5,6 +5,8 @@ public class PlayerController : MonoBehaviour
 {
 
     public static PlayerController instance = null;
+
+    Rigidbody rb;
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -14,12 +16,13 @@ public class PlayerController : MonoBehaviour
 
 
     CameraController cameraController;
-    CharacterController characterController;
+    //CharacterController characterController;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        characterController = GetComponent<CharacterController>();
+        //characterController = GetComponent<CharacterController>();
         cameraController = CameraController.instance;
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -49,9 +52,12 @@ public class PlayerController : MonoBehaviour
 
         // Calculate the desired movement direction
         Vector3 moveDirection = (forward * vertical + right * horizontal).normalized;
-
+        moveDirection.y = 0;
         // Move the player using the CharacterController
-        characterController.Move(moveDirection * speed * Time.deltaTime);
+        //characterController.Move(moveDirection * speed * Time.deltaTime);
+
+        rb.MovePosition(rb.position + (moveDirection * speed * Time.deltaTime));
+
 
         // Face the movement direction (optional)
         if (moveDirection != Vector3.zero)
