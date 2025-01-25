@@ -301,7 +301,7 @@ public class PlayerController : MonoBehaviour
         coroutineBubble = StartCoroutine(rutineBubble(1));
     }
 
-    void Die()
+    public void Die()
     {
 
         psDie.Play();
