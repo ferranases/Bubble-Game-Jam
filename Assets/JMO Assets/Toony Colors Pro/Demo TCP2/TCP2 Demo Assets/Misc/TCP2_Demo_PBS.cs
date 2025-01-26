@@ -1,5 +1,5 @@
 ﻿// Toony Colors Pro+Mobile 2
-// (c) 2014-2023 Jean Moreno
+// (c) 2014-2020 Jean Moreno
 
 using System;
 using UnityEngine;
@@ -254,12 +254,7 @@ namespace ToonyColorsPro
 				DirLight.color = ss.lightColor;
 
 				RenderSettings.skybox = ss.SkyMaterial;
-#if UNITY_2022_1_OR_NEWER
-				RenderSettings.customReflectionTexture =
-#else
-				RenderSettings.customReflection =
-#endif
-					ss.SkyMaterial.GetTexture("_Tex") as Cubemap;
+				RenderSettings.customReflection = ss.SkyMaterial.GetTexture("_Tex") as Cubemap;
 				DynamicGI.UpdateEnvironment();
 
 				SkyboxValue.text = string.Format("{0}/{1}", currentSky + 1, SkySettings.Length);

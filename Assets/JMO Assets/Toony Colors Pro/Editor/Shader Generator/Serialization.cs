@@ -40,12 +40,6 @@ namespace ToonyColorsPro
 			}
 
 			/// <summary>
-			/// Force serialization, regardless of the "conditionalField" attribute value
-			/// </summary>
-			[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-			public class ForceSerializationAttribute : Attribute { }
-
-			/// <summary>
 			/// Declare a method as a callback to deserialize an object manually
 			/// </summary>
 			[AttributeUsage(AttributeTargets.Method)]
@@ -64,7 +58,7 @@ namespace ToonyColorsPro
 			}
 
 			//Will serialize an object as "type(field:value,field2:value,field3:value...)" provided that they have fields with the [SerializeAs] attribute
-			public static string Serialize(object obj, FieldInfo objFieldInfo = null)
+			public static string Serialize(object obj)
 			{
 				var output = "";
 
@@ -78,33 +72,29 @@ namespace ToonyColorsPro
 					var conditionalFieldName = serializedAsAttribute.conditionalField;
 					if (!string.IsNullOrEmpty(conditionalFieldName))
 					{
-						var forceSerialization = objFieldInfo != null && ((Attribute[])objFieldInfo.GetCustomAttributes(typeof(ForceSerializationAttribute))).Length == 1;
-						if (!forceSerialization)
+						//try field
+						var conditionalField = obj.GetType().GetField(conditionalFieldName);
+						if (conditionalField != null)
 						{
-							//try field
-							var conditionalField = obj.GetType().GetField(conditionalFieldName);
-							if (conditionalField != null)
+							if (!(bool)conditionalField.GetValue(obj))
 							{
-								if (!(bool) conditionalField.GetValue(obj))
+								return null;
+							}
+						}
+						else
+						{
+							//try property
+							var conditionalProperty = obj.GetType().GetProperty(conditionalFieldName);
+							if (conditionalProperty != null)
+							{
+								if (!(bool)conditionalProperty.GetValue(obj, null))
 								{
 									return null;
 								}
 							}
 							else
 							{
-								//try property
-								var conditionalProperty = obj.GetType().GetProperty(conditionalFieldName);
-								if (conditionalProperty != null)
-								{
-									if (!(bool) conditionalProperty.GetValue(obj, null))
-									{
-										return null;
-									}
-								}
-								else
-								{
-									Debug.LogError(string.Format("Conditional field or property '{0}' doesn't exist for type '{1}'", conditionalFieldName, obj.GetType()));
-								}
+								Debug.LogError(string.Format("Conditional field or property '{0}' doesn't exist for type '{1}'", conditionalFieldName, obj.GetType()));
 							}
 						}
 					}
@@ -173,7 +163,7 @@ namespace ToonyColorsPro
 								if (refAttributes != null && refAttributes.Length == 1)
 								{
 									//serializable
-									return Serialize(@object, field);
+									return Serialize(@object);
 								}
 
 								return null;
@@ -183,43 +173,15 @@ namespace ToonyColorsPro
 							{
 								return string.Format("\"{0}\"", @object);
 							}
-							
-							// unity vectors: prevent printing values with commas
-							if (type == typeof(Vector2))
-							{
-								var v2 = (Vector2) @object;
-								return string.Format(CultureInfo.InvariantCulture, "({0}, {1})", v2.x, v2.y);
-							}
-							if (type == typeof(Vector3))
-							{
-								var v3 = (Vector3) @object;
-								return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2})", v3.x, v3.y, v3.z);
-							}
-							if (type == typeof(Vector4))
-							{
-								var v4 = (Vector4) @object;
-								return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2}, {3})", v4.x, v4.y, v4.z, v4.w);
-							}
-							if (type == typeof(Color))
-							{
-								var c = (Color) @object;
-								return string.Format(CultureInfo.InvariantCulture, "RGBA({0}, {1}, {2}, {3})", c.r, c.g, c.b, c.a);
-								// return string.Format(CultureInfo.InvariantCulture, "{0}", c);
-							}
-							
 							//value type: just return the toString version
 							return string.Format(CultureInfo.InvariantCulture, "{0}", @object);
 						};
 
 						var val = GetStringValue(field.GetValue(obj));
-						if (val == null) 
-						{
+						if (val == null)
 							Debug.LogError(string.Format("Can't serialize this reference type: '{0}'\nFor field: '{1}'", field.FieldType, field.Name));
-						}
 						else
-						{
 							output += string.Format("{0}:{1};", name, val);
-						}
 					}
 				}
 

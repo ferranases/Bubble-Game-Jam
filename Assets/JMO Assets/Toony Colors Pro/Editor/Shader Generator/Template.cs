@@ -1,5 +1,5 @@
 ﻿// Toony Colors Pro 2
-// (c) 2014-2023 Jean Moreno
+// (c) 2014-2020 Jean Moreno
 
 using System;
 using System.Collections.Generic;
@@ -184,12 +184,9 @@ namespace ToonyColorsPro
 			//Returns an array of parsed lines based on the current features enabled, with their corresponding original line number (for error reporting)
 			//Only keeps the lines necessary to generate the shader source, e.g. #FEATURES will be skipped
 			//Conditions are now only processed in this function, all the other code should ignore them
-			readonly List<ParsedLine> cachedParsedLines = new List<ParsedLine>();
 			internal ParsedLine[] GetParsedLinesFromConditions(Config config, List<string> flags, Dictionary<string, List<string>> extraFlags)
 			{
-				// var list = new List<ParsedLine>();
-				cachedParsedLines.Clear();
-				var list = cachedParsedLines;
+				var list = new List<ParsedLine>();
 
 				int depth = -1;
 				var stack = new List<bool>();
@@ -204,15 +201,6 @@ namespace ToonyColorsPro
 				var conditionFeatures = new List<string>(config.GetShaderPropertiesNeededFeaturesAll());
 				conditionFeatures.AddRange(config.Features);
 				conditionFeatures.AddRange(config.ExtraTempFeatures);
-				
-				// save persistent terrain features so that they will also be applied to the BaseGen shader
-				foreach (string feature in conditionFeatures)
-				{
-					if (feature.StartsWith("USE_TERRAIN"))
-					{
-						ShaderGenerator2.TerrainPersistentKeywords.Add(feature);
-					}
-				}
 
 				//make sure keywords have been processed
 				var keywordsFeatures = new List<string>();
@@ -223,7 +211,7 @@ namespace ToonyColorsPro
 				//this is to make sure that the CGINCLUDE block with needed #VARIABLES:MODULES gets processed correctly
 				features.AddRange(config.GetShaderPropertiesNeededFeaturesAll());
 				features.AddRange(config.GetHooksNeededFeatures());
-				features.AddRange(config.GetCodeInjectionNeededFeatures());
+				features.AddRange(config.GetCodeInjectionNeeededFeatures());
 
 				//parse lines and strip based on conditions
 				for (var i = 0; i < textLines.Length; i++)
@@ -238,7 +226,7 @@ namespace ToonyColorsPro
 							passIndex++;
 							features = new List<string>(config.Features);
 							features.AddRange(config.GetHooksNeededFeatures());
-							features.AddRange(config.GetCodeInjectionNeededFeatures());
+							features.AddRange(config.GetCodeInjectionNeeededFeatures());
 							features.AddRange(config.GetShaderPropertiesNeededFeaturesForPass(passIndex));
 
 							var passKeywordsFeatures = new List<string>();
@@ -260,7 +248,7 @@ namespace ToonyColorsPro
 					}
 
 					//Conditions
-					if (IsConditionLine(ref line))
+					if (line.Contains("///"))
 					{
 						if (line.Contains("/// IF_KEYWORD "))
 						{
@@ -388,7 +376,6 @@ namespace ToonyColorsPro
 					var newTemplateLines = new List<string>();
 					Dictionary<string, Module> modules = new Dictionary<string, Module>();
 					var usedModulesVariables = new HashSet<Module>();
-					var usedModulesVariablesOutsideCBuffer = new HashSet<Module>();
 					var usedModulesFunctions = new HashSet<Module>();
 					var usedModulesInput = new HashSet<Module>();
 					for (int i = 0; i < originalTextLines.Length; i++)
@@ -415,9 +402,7 @@ namespace ToonyColorsPro
 									var moduleName = line.Trim();
 									var module = Module.CreateFromName(moduleName);
 									if (module != null)
-									{
 										modules.Add(moduleName, module);
-									}
 								}
 								catch (Exception e)
 								{
@@ -481,8 +466,9 @@ namespace ToonyColorsPro
 										usedModulesInput.Add(module);
 									}
 								}
+
 							}
-							else if (tag == "INPUT")
+							if (tag == "INPUT")
 							{
 								//Print all Input lines from all modules
 								foreach (var module in modules.Values)
@@ -510,7 +496,7 @@ namespace ToonyColorsPro
 								//Print all Variables lines from all modules
 								foreach (var module in modules.Values)
 								{
-									if (!usedModulesFunctions.Contains(module) && !module.ExplicitFunctionsDeclaration)
+									if (!usedModulesFunctions.Contains(module))
 									{
 										AddRangeWithIndent(newTemplateLines, module.Functions, indent);
 									}
@@ -528,18 +514,6 @@ namespace ToonyColorsPro
 									}
 								}
 							}
-							else if (tag.StartsWith("VARIABLES_OUTSIDE_CBUFFER:"))
-							{
-								//Print Variables line from specific module
-								foreach (var module in modules.Values)
-								{
-									if (module.name == moduleName)
-									{
-										AddRangeWithIndent(newTemplateLines, module.VariablesOutsideCBuffer, indent);
-										usedModulesVariablesOutsideCBuffer.Add(module);
-									}
-								}
-							}
 							else if (tag == "VARIABLES")
 							{
 								//Print all Variables lines from all modules
@@ -548,17 +522,6 @@ namespace ToonyColorsPro
 									if (!usedModulesVariables.Contains(module))
 									{
 										AddRangeWithIndent(newTemplateLines, module.Variables, indent);
-									}
-								}
-							}
-							else if (tag == "VARIABLES_OUTSIDE_CBUFFER")
-							{
-								//Print all Variables lines from all modules
-								foreach (var module in modules.Values)
-								{
-									if (!usedModulesVariablesOutsideCBuffer.Contains(module))
-									{
-										AddRangeWithIndent(newTemplateLines, module.VariablesOutsideCBuffer, indent);
 									}
 								}
 							}
@@ -618,28 +581,10 @@ namespace ToonyColorsPro
 
 								AddRangeWithIndent(newTemplateLines, modules[moduleName].FragmentLines(args, key), indent);
 							}
-							else
-							{
-								string blockName = tag.Substring(0, tag.LastIndexOf(":", StringComparison.Ordinal));
-								var blockLines = modules[moduleName].GetArbitraryBlock(blockName);
-								if (blockLines != null)
-								{
-									AddRangeWithIndent(newTemplateLines, blockLines.ToArray(), "");
-								}
-							}
 						}
 						else
 						{
 							newTemplateLines.Add(line);
-						}
-					}
-
-					// Check unused explicit modules functions
-					foreach (var module in modules.Values)
-					{
-						if (module.ExplicitFunctionsDeclaration && !usedModulesFunctions.Contains(module))
-						{
-							Debug.LogWarning("Module has explicit functions declaration, but isn't used: " + module.name);
 						}
 					}
 
@@ -995,7 +940,7 @@ namespace ToonyColorsPro
 
 							foreach (var sp in list)
 							{
-								if (passIndex >= 0 && passIndex < shaderPropertiesPerPass.Count && !shaderPropertiesPerPass[passIndex].Contains(sp))
+								if (!shaderPropertiesPerPass[passIndex].Contains(sp))
 								{
 									shaderPropertiesPerPass[passIndex].Add(sp);
 								}
@@ -1141,7 +1086,7 @@ namespace ToonyColorsPro
 							}
 
 							//Conditions
-							if (IsConditionLine(ref line))
+							if (line.Contains("///"))
 							{
 								if (line.Contains("/// IF_KEYWORD "))
 								{
@@ -1245,7 +1190,7 @@ namespace ToonyColorsPro
 								continue;
 
 							//Conditions
-							if (IsConditionLine(ref line))
+							if (line.Contains("///"))
 							{
 								Debug.LogError(ShaderGenerator2.ErrorMsg("GetInputBlock: template lines should already have been parsed and cleared of conditions"));
 							}
@@ -1259,41 +1204,6 @@ namespace ToonyColorsPro
 				}
 
 				return null;
-			}
-
-			// Checks if the line contains /// and is thus a condition line
-			// Faster than string.Contains("///"), and is called a lot
-			static bool IsConditionLine(ref string line)
-			{
-				bool isCondition = false;
-				int slashCount = 0;
-				for (int c = 0; c < line.Length; c++)
-				{
-					if (line[c] == ' ' || line[c] == '\t')
-					{
-						if (slashCount == 3)
-						{
-							isCondition = true;
-							break;
-						}
-							
-						if (slashCount > 0)
-						{
-							break;
-						}
-					}
-					else if (line[c] == '/')
-					{
-						slashCount++;
-					}
-					else
-					{
-						break;
-					}
-				}
-
-				isCondition |= slashCount == 3;
-				return isCondition;
 			}
 		}
 	}
