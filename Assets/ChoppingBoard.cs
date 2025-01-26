@@ -21,8 +21,8 @@ public class ChoppingBoard : MonoBehaviour
     {
         while (true)
         {
-            LeanTween.rotateX(pointRotation.gameObject, 75, 1f).setEaseInQuad();
-            yield return new WaitForSeconds(1.1f);
+            LeanTween.rotateX(pointRotation.gameObject, 62.5f, 1f).setEaseInQuad();
+            yield return new WaitForSeconds(1.05f);
             LeanTween.rotateX(pointRotation.gameObject, 0, 0.25f).setEaseInQuad();
             yield return new WaitForSeconds(1f);
         }
