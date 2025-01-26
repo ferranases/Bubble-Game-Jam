@@ -7,6 +7,7 @@ public class Fan : MonoBehaviour
     public float speedRotate;
 
     bool active = false;
+    public AudioSource FanSound;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -15,6 +16,7 @@ public class Fan : MonoBehaviour
 
     public void Activate()
     {
+        FanSound.enabled = true;
         active = true;
         pusher.SetActive(true);
     }

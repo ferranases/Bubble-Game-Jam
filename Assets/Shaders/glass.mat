@@ -37,6 +37,7 @@ Material:
     - _ReflectionIntensity: 0.5
     - _RimPower: 2.5
     - _RimTexIntensity: 1
+    - _SensorId: 1
     m_Colors:
     - _Color: {r: 0.18396229, g: 0.5052372, b: 1, a: 0.1}
     - _RimColor: {r: 0.21226418, g: 0.9037503, b: 1, a: 1}
