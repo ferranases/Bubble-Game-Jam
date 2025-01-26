@@ -191,6 +191,7 @@ MonoBehaviour:
   rotator: {fileID: 7577675995213125933}
   pusher: {fileID: 7411045425861770453}
   speedRotate: 360
+  FanSound: {fileID: 5312599391050066023}
 --- !u!82 &5312599391050066023
 AudioSource:
   m_ObjectHideFlags: 0

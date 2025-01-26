@@ -50,8 +50,11 @@ public class PlayerController : MonoBehaviour
     public Transform parentSkin;
     public Animator animator;
 
+
     [Header("Effects")]
     public ParticleSystem psDie;
+    public ParticleSystem psFar;
+    public ParticleSystem psJump;
 
     [Header("Test")]
     public MeshRenderer meshRenderer;
@@ -209,7 +212,6 @@ public class PlayerController : MonoBehaviour
             currentMode = TypeMode.jumping;
             animator.SetTrigger("jump");
 
-
             jumpAudioSource.PlayOneShot(jumpClip);
         }
 
@@ -271,6 +273,8 @@ public class PlayerController : MonoBehaviour
 
         if (coroutineBubble != null) StopCoroutine(coroutineBubble);
         coroutineBubble = StartCoroutine(rutineBubble());
+
+        psFar.Play();
     }
 
     IEnumerator rutineBubble(int _val = 0)
