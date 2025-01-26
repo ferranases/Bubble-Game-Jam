@@ -170,7 +170,7 @@ public class PlayerController : MonoBehaviour
         float horizontalRot = Input.GetAxis("Horizontal"); // A/D or Left/Right
         float verticalRot = Input.GetAxis("Vertical");     // W/S or Up/Down
 
-        float speed = Mathf.Abs(horizontalRot) + Mathf.Abs(verticalRot);
+        float speed = Mathf.Clamp(Mathf.Abs(horizontalRot) + Mathf.Abs(verticalRot), 0, 1);
         animator.SetFloat("speed", speed);
 
         // Get the forward and right directions relative to the camera
