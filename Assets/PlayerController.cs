@@ -259,7 +259,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator rutineDie()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         GameManager.instance.RestarScene();
     }
 
