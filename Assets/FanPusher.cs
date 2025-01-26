@@ -63,6 +63,7 @@ public class FanPusher : MonoBehaviour
             rbPlayer.AddForce(direction * force * Time.fixedDeltaTime, ForceMode.Acceleration);
         }
 
+        //Limit the Pos Y of player
         Vector3 posPlayer = rbPlayer.transform.position;
         posPlayer.y = Mathf.Min(rbPlayer.transform.position.y, posDesired.position.y);
         rbPlayer.transform.position = posPlayer;
