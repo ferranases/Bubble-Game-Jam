@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
     public Transform pointCheckFloorBelow;
     public Transform pointCheckFloorBehind;
     public Transform parentSkin;
+    public Animator animator;
 
     [Header("Effects")]
     public ParticleSystem psDie;
@@ -82,6 +83,8 @@ public class PlayerController : MonoBehaviour
     Vector3 moveDirection;
 
     bool canCheckFloor = true;
+
+    bool checkAnimationIddle = false;
 
     public void Activate()
     {
@@ -121,9 +124,17 @@ public class PlayerController : MonoBehaviour
                 currentMode = TypeMode.iddle;
                 if (coroutineBubble != null) StopCoroutine(coroutineBubble);
                 ResetGravity();
+
+                if (!checkAnimationIddle)
+                {
+                    animator.SetTrigger("iddle");
+                    checkAnimationIddle = true;
+                }
+
             }
             else
             {
+                checkAnimationIddle = false;
                 isGrounded = false;
                 meshRenderer.material = materialJump;
             }
@@ -151,6 +162,9 @@ public class PlayerController : MonoBehaviour
 
         float horizontalRot = Input.GetAxis("Horizontal"); // A/D or Left/Right
         float verticalRot = Input.GetAxis("Vertical");     // W/S or Up/Down
+
+        float speed = Mathf.Abs(horizontalRot + verticalRot);
+        animator.SetFloat("speed", speed);
 
         // Get the forward and right directions relative to the camera
         Vector3 forward = cameraController.transform.forward;
@@ -189,6 +203,7 @@ public class PlayerController : MonoBehaviour
             youJumped = true;
             canCheckFloor = false;
             currentMode = TypeMode.jumping;
+            animator.SetTrigger("jump");
         }
 
         if (bubbleActivated && Input.GetKeyUp(KeyCode.Space))
@@ -241,6 +256,8 @@ public class PlayerController : MonoBehaviour
     {
         bubbleActivated = true;
         currentMode = TypeMode.bubble;
+
+        animator.SetTrigger("float");
 
         rb.linearVelocity = Vector3.zero;
         currentLowJumpMultiplier = 0;
