@@ -50,8 +50,11 @@ public class PlayerController : MonoBehaviour
     public Transform parentSkin;
     public Animator animator;
 
+
     [Header("Effects")]
     public ParticleSystem psDie;
+    public ParticleSystem psFar;
+    public ParticleSystem psJump;
 
     [Header("Test")]
     public MeshRenderer meshRenderer;
@@ -90,6 +93,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource DeathAudioSource;
     public AudioClip jumpClip;
     public AudioClip deathClip;
+    public AudioClip floating;
     public void Activate()
     {
         active = true;
@@ -167,7 +171,7 @@ public class PlayerController : MonoBehaviour
         float horizontalRot = Input.GetAxis("Horizontal"); // A/D or Left/Right
         float verticalRot = Input.GetAxis("Vertical");     // W/S or Up/Down
 
-        float speed = Mathf.Abs(horizontalRot + verticalRot);
+        float speed = Mathf.Clamp(Mathf.Abs(horizontalRot) + Mathf.Abs(verticalRot), 0, 1);
         animator.SetFloat("speed", speed);
 
         // Get the forward and right directions relative to the camera
@@ -209,8 +213,8 @@ public class PlayerController : MonoBehaviour
             currentMode = TypeMode.jumping;
             animator.SetTrigger("jump");
 
-
-            jumpAudioSource.PlayOneShot(jumpClip);
+            jumpAudioSource.pitch = Random.Range(0.85f, 1.15f);
+            jumpAudioSource.PlayOneShot(jumpClip, 0.5f);
         }
 
         if (bubbleActivated && Input.GetKeyUp(KeyCode.Space))
@@ -255,7 +259,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator rutineDie()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         GameManager.instance.RestarScene();
     }
 
@@ -271,6 +275,9 @@ public class PlayerController : MonoBehaviour
 
         if (coroutineBubble != null) StopCoroutine(coroutineBubble);
         coroutineBubble = StartCoroutine(rutineBubble());
+
+        DeathAudioSource.PlayOneShot(floating, 2);
+        psFar.Play();
     }
 
     IEnumerator rutineBubble(int _val = 0)
@@ -327,7 +334,7 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        DeathAudioSource.PlayOneShot(deathClip);
+        DeathAudioSource.PlayOneShot(deathClip, 3);
         psDie.Play();
         alive = false;
         StartCoroutine(rutineDie());
