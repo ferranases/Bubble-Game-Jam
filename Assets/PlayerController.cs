@@ -93,6 +93,7 @@ public class PlayerController : MonoBehaviour
     public AudioSource DeathAudioSource;
     public AudioClip jumpClip;
     public AudioClip deathClip;
+    public AudioClip floating;
     public void Activate()
     {
         active = true;
@@ -212,6 +213,7 @@ public class PlayerController : MonoBehaviour
             currentMode = TypeMode.jumping;
             animator.SetTrigger("jump");
 
+            jumpAudioSource.pitch = Random.Range(0.85f, 1.15f);
             jumpAudioSource.PlayOneShot(jumpClip);
         }
 
@@ -274,6 +276,7 @@ public class PlayerController : MonoBehaviour
         if (coroutineBubble != null) StopCoroutine(coroutineBubble);
         coroutineBubble = StartCoroutine(rutineBubble());
 
+        DeathAudioSource.PlayOneShot(floating, 2);
         psFar.Play();
     }
 
@@ -331,7 +334,7 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-        DeathAudioSource.PlayOneShot(deathClip);
+        DeathAudioSource.PlayOneShot(deathClip, 3);
         psDie.Play();
         alive = false;
         StartCoroutine(rutineDie());

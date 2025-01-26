@@ -10,7 +10,8 @@ public class PanelStart : MonoBehaviour
 
     public TMP_InputField inputFieldName;
 
-
+    public AudioSource audioSource;
+    public AudioClip playSound;
 
     private void Start()
     {
@@ -22,6 +23,8 @@ public class PanelStart : MonoBehaviour
         {
             StartGame();
         });
+
+        SoundManager.instance.PlaySound();
     }
 
     public void ButtonSettings()
@@ -40,6 +43,7 @@ public class PanelStart : MonoBehaviour
     {
         GameManager.instance.StartGame();
         gameObject.SetActive(false);
+
 
 
     }
