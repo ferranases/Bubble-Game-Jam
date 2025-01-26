@@ -85,7 +85,11 @@ public class PlayerController : MonoBehaviour
     bool canCheckFloor = true;
 
     bool checkAnimationIddle = false;
-
+    [Header("sound")]
+    public AudioSource jumpAudioSource;
+    public AudioSource DeathAudioSource;
+    public AudioClip jumpClip;
+    public AudioClip deathClip;
     public void Activate()
     {
         active = true;
@@ -204,6 +208,9 @@ public class PlayerController : MonoBehaviour
             canCheckFloor = false;
             currentMode = TypeMode.jumping;
             animator.SetTrigger("jump");
+
+
+            jumpAudioSource.PlayOneShot(jumpClip);
         }
 
         if (bubbleActivated && Input.GetKeyUp(KeyCode.Space))
@@ -320,7 +327,7 @@ public class PlayerController : MonoBehaviour
 
     public void Die()
     {
-
+        DeathAudioSource.PlayOneShot(deathClip);
         psDie.Play();
         alive = false;
         StartCoroutine(rutineDie());
