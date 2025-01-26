@@ -214,7 +214,7 @@ public class PlayerController : MonoBehaviour
             animator.SetTrigger("jump");
 
             jumpAudioSource.pitch = Random.Range(0.85f, 1.15f);
-            jumpAudioSource.PlayOneShot(jumpClip);
+            jumpAudioSource.PlayOneShot(jumpClip, 0.5f);
         }
 
         if (bubbleActivated && Input.GetKeyUp(KeyCode.Space))

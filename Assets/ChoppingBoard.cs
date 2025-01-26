@@ -5,6 +5,8 @@ public class ChoppingBoard : MonoBehaviour
 {
 
     public Transform pointRotation;
+    public AudioSource audioSource;
+    public AudioClip clip;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,7 +25,11 @@ public class ChoppingBoard : MonoBehaviour
         {
             LeanTween.rotateX(pointRotation.gameObject, 62.5f, 1f).setEaseInQuad();
             yield return new WaitForSeconds(1.05f);
-            LeanTween.rotateX(pointRotation.gameObject, 0, 0.25f).setEaseInQuad();
+            LeanTween.rotateX(pointRotation.gameObject, 0, 0.25f).setEaseInQuad().setOnComplete(() =>
+            {
+                audioSource.PlayOneShot(clip, 2);
+
+            });
             yield return new WaitForSeconds(1f);
         }
     }
