@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
     public void Die()
     {
         CameraController.instance.Stop();
+        SoundManager.instance.PlayLose();
     }
 
     public void RestarScene()

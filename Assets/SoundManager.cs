@@ -11,6 +11,7 @@ public class SoundManager : MonoBehaviour
 
     public AudioSource audioSource;
     public AudioClip playSound;
+    public AudioClip playLose;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -26,5 +27,10 @@ public class SoundManager : MonoBehaviour
     public void PlaySound()
     {
         audioSource.PlayOneShot(playSound);
+    }
+
+    public void PlayLose()
+    {
+        audioSource.PlayOneShot(playLose);
     }
 }
